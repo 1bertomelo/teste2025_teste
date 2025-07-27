@@ -1,20 +1,19 @@
-# Etapa de build com .NET 9
-FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
+# Etapa de build com .NET 8
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia o .csproj e restaura dependências
-COPY helloWorld/*.csproj ./helloWorld/
-WORKDIR /src/helloWorld
-RUN dotnet restore
+# Copia o .csproj e restaura as dependências
+COPY helloWorld/helloWorld.csproj ./helloWorld/
+RUN dotnet restore helloWorld/helloWorld.csproj
 
-# Copia o restante do código
+# Copia o restante do projeto
 COPY . .
 
 # Publica o projeto
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish helloWorld/helloWorld.csproj -c Release -o /app/publish
 
 # Etapa de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
